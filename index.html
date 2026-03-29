@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المواقع السياحية في سلطنة عُمان</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    background: #f5f0eb;
+    color: #2c2416;
+    direction: rtl;
+  }
+  header {
+    background: linear-gradient(135deg, #8B4513 0%, #C17E3A 50%, #8B4513 100%);
+    color: white;
+    padding: 40px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '🕌';
+    font-size: 120px;
+    position: absolute;
+    opacity: 0.08;
+    top: -20px;
+    left: 20px;
+  }
+  header::after {
+    content: '⛵';
+    font-size: 100px;
+    position: absolute;
+    opacity: 0.08;
+    bottom: -10px;
+    right: 20px;
+  }
+  header h1 { font-size: 2.2rem; margin-bottom: 8px; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); }
+  header p { font-size: 1rem; opacity: 0.9; }
+  .stats-bar {
+    background: #2c2416;
+    color: #f5f0eb;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    padding: 14px 20px;
+    flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat .num { font-size: 1.6rem; font-weight: bold; color: #C17E3A; }
+  .stat .label { font-size: 0.75rem; opacity: 0.8; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+  .gov-section {
+    background: white;
+    border-radius: 16px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .gov-header {
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .gov-icon { font-size: 2rem; }
+  .gov-title { flex: 1; }
+  .gov-title h2 { font-size: 1.3rem; margin-bottom: 2px; }
+  .gov-title p { font-size: 0.82rem; opacity: 0.8; }
+  .gov-count {
+    background: rgba(255,255,255,0.3);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.85rem;
+    font-weight: bold;
+  }
+  .toggle-icon { font-size: 1.2rem; transition: transform 0.3s; }
+  .gov-section.collapsed .toggle-icon { transform: rotate(180deg); }
+  .sites-grid {
+    padding: 0 20px 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 10px;
+    transition: all 0.3s;
+  }
+  .gov-section.collapsed .sites-grid { display: none; }
+  .category-block { margin-bottom: 16px; }
+  .category-label {
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    display: inline-block;
+  }
+  .site-card {
+    background: #faf8f5;
+    border: 1px solid #e8e0d0;
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    transition: all 0.2s;
+  }
+  .site-card:hover {
+    background: #fff8f0;
+    border-color: #C17E3A;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(193,126,58,0.15);
+  }
+  .site-emoji { font-size: 1.3rem; flex-shrink: 0; margin-top: 2px; }
+  .site-info { flex: 1; min-width: 0; }
+  .site-name { font-weight: 600; font-size: 0.92rem; color: #2c2416; }
+  .site-desc { font-size: 0.78rem; color: #7a6a55; margin-top: 2px; line-height: 1.4; }
+  .site-tag {
+    display: inline-block;
+    font-size: 0.65rem;
+    padding: 1px 6px;
+    border-radius: 8px;
+    margin-top: 4px;
+    font-weight: 600;
+  }
+  /* Color themes per governorate */
+  .muscat .gov-header { background: linear-gradient(135deg, #1a4a7a, #2e6da4); color: white; }
+  .muscat .gov-count { background: rgba(255,255,255,0.25); color: white; }
+  .muscat .category-label { background: #e8f0fa; color: #1a4a7a; }
+  .muscat .site-tag { background: #e8f0fa; color: #1a4a7a; }
+
+  .dakhiliya .gov-header { background: linear-gradient(135deg, #3a6b35, #5a9e52); color: white; }
+  .dakhiliya .gov-count { background: rgba(255,255,255,0.25); color: white; }
+  .dakhiliya .category-label { background: #e8f5e5; color: #3a6b35; }
+  .dakhiliya .site-tag { background: #e8f5e5; color: #3a6b35; }
+
+  .sharqiya .gov-header { background: linear-gradient(135deg, #2a6b6b, #3a9e9e); color: white; }
+  .sharqiya .gov-count { background: rgba(255,255,255,0.25); color: white; }
+  .sharqiya .category-label { background: #e0f5f5; color: #2a6b6b; }
+  .sharqiya .site-tag { background: #e0f5f5; color: #2a6b6b; }
+
+  .dhofar .gov-header { background: linear-gradient(135deg, #5a3e6b, #8a5ea0); color: white; }
+  .dhofar .gov-count { background: rgba(255,255,255,0.25); color: white; }
+  .dhofar .category-label { background: #f0e8f8; color: #5a3e6b; }
+  .dhofar .site-tag { background: #f0e8f8; color: #5a3e6b; }
+
+  .musandam .gov-header { background: linear-gradient(135deg, #7a3a1a, #b55a2a); color: white; }
+  .musandam .gov-count { background: rgba(255,255,255,0.25); color: white; }
+  .musandam .category-label { background: #faeae0; color: #7a3a1a; }
+  .musandam .site-tag { background: #faeae0; color: #7a3a1a; }
+
+  .batinah .gov-header { background: linear-gradient(135deg, #1a5a5a, #2a8a8a); color: white; }
+  .batinah .gov-count { background: rgba(255,255,255,0.25); color: white; }
+  .batinah .category-label { background: #e0f0f0; color: #1a5a5a; }
+  .batinah .site-tag { background: #e0f0f0; color: #1a5a5a; }
+
+  .zahira .gov-header { background: linear-gradient(135deg, #6b5a1a, #9e852a); color: white; }
+  .zahira .gov-count { background: rgba(255,255,255,0.25); color: white; }
+  .zahira .category-label { background: #f8f0d8; color: #6b5a1a; }
+  .zahira .site-tag { background: #f8f0d8; color: #6b5a1a; }
+
+  .wusta .gov-header { background: linear-gradient(135deg, #6b3a3a, #9e5a5a); color: white; }
+  .wusta .gov-count { background: rgba(255,255,255,0.25); color: white; }
+  .wusta .category-label { background: #f8e8e8; color: #6b3a3a; }
+  .wusta .site-tag { background: #f8e8e8; color: #6b3a3a; }
+
+  .buraimi .gov-header { background: linear-gradient(135deg, #3a5a1a, #5a8a2a); color: white; }
+  .buraimi .gov-count { background: rgba(255,255,255,0.25); color: white; }
+  .buraimi .category-label { background: #e8f5d8; color: #3a5a1a; }
+  .buraimi .site-tag { background: #e8f5d8; color: #3a5a1a; }
+
+  footer {
+    text-align: center;
+    padding: 30px;
+    background: #2c2416;
+    color: #a09070;
+    font-size: 0.85rem;
+  }
+  .search-bar {
+    background: white;
+    border-radius: 30px;
+    padding: 12px 20px;
+    margin: 20px auto;
+    max-width: 600px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  .search-bar input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    direction: rtl;
+    font-family: inherit;
+  }
+  .search-bar span { font-size: 1.2rem; color: #999; }
+  .no-results {
+    text-align: center;
+    padding: 30px;
+    color: #888;
+    font-size: 1rem;
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌍 المواقع السياحية في سلطنة عُمان</h1>
+  <p>دليل شامل لأبرز الوجهات السياحية عبر جميع محافظات السلطنة</p>
+</header>
+
+<div class="stats-bar">
+  <div class="stat"><div class="num" id="totalCount">400+</div><div class="label">موقع سياحي</div></div>
+  <div class="stat"><div class="num">11</div><div class="label">محافظة</div></div>
+  <div class="stat"><div class="num">9</div><div class="label">فئات سياحية</div></div>
+</div>
+
+<div class="container">
+
+  <div class="search-bar">
+    <span>🔍</span>
+    <input type="text" id="searchInput" placeholder="ابحث عن موقع..." onkeyup="filterSites()">
+  </div>
+
+  <div id="noResults" class="no-results">لا توجد نتائج مطابقة لبحثك</div>
+
+  <!-- ======= مسقط ======= -->
+  <div class="gov-section muscat" id="sec-muscat">
+    <div class="gov-header" onclick="toggleSection('muscat')">
+      <span class="gov-icon">🏙️</span>
+      <div class="gov-title">
+        <h2>محافظة مسقط</h2>
+        <p>عاصمة السلطنة • تاريخ وحداثة وشواطئ خلابة</p>
+      </div>
+      <span class="gov-count">56 موقع</span>
+      <span class="toggle-icon">▲</span>
+    </div>
+    <div class="sites-grid">
+      <!-- مساجد ومعالم دينية -->
+      <div class="site-card"><span class="site-emoji">🕌</span><div class="site-info"><div class="site-name">الجامع السلطاني القبوس الكبير</div><div class="site-desc">ثالث أكبر مسجد في العالم • تحفة معمارية إسلامية</div><span class="site-tag">مسجد تاريخي</span></div></div>
+      <!-- قلاع وحصون -->
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">قصر العلم</div><div class="site-desc">القصر الملكي الرسمي بواجهته الزرقاء والذهبية الشهيرة</div><span class="site-tag">قصر ملكي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">حصن الجلالي</div><div class="site-desc">حصن برتغالي تاريخي يطل على ميناء مسقط القديم</div><span class="site-tag">حصن تاريخي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">حصن الميراني</div><div class="site-desc">الحصن الغربي التوأم للجلالي يحرس مدخل ميناء مسقط</div><span class="site-tag">حصن تاريخي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">حصن مطرح</div><div class="site-desc">يطل على كورنيش مطرح بإطلالات بانورامية على الخليج</div><span class="site-tag">حصن تاريخي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">قلعة بيت المقحم</div><div class="site-desc">قلعة أثرية في سفوح جبال الحجر تروي الحياة الزراعية</div><span class="site-tag">قلعة</span></div></div>
+      <!-- كورنيش وشواطئ -->
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">كورنيش مطرح</div><div class="site-desc">3 كيلومترات على ساحل خليج عمان • أجمل كورنيش في المنطقة</div><span class="site-tag">كورنيش</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ قنتب</div><div class="site-desc">شاطئ رملي هادئ مثالي للغطس والسنوركلينج</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ بندر الجصة</div><div class="site-desc">شعاب مرجانية خلابة وسلاحف بحرية</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ القرم</div><div class="site-desc">شاطئ عائلي قريب من حديقة القرم الطبيعية</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ العجيبة</div><div class="site-desc">شاطئ طويل ذو رمال ذهبية وأمواج هادئة</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ السيفة</div><div class="site-desc">شاطئ ساحر في جنوب مسقط مع بحيرات مائية</div><span class="site-tag">شاطئ</span></div></div>
+      <!-- أسواق -->
+      <div class="site-card"><span class="site-emoji">🛍️</span><div class="site-info"><div class="site-name">سوق مطرح (سوق الذهب)</div><div class="site-desc">من أعرق الأسواق العربية • البخور والتوابل والمقتنيات</div><span class="site-tag">سوق تراثي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🛍️</span><div class="site-info"><div class="site-name">سوق روي للحيوانات</div><div class="site-desc">سوق الماشية الجمعي التقليدي كل جمعة</div><span class="site-tag">سوق تقليدي</span></div></div>
+      <!-- متاحف وثقافة -->
+      <div class="site-card"><span class="site-emoji">🏛️</span><div class="site-info"><div class="site-name">المتحف الوطني العماني</div><div class="site-desc">أكثر من 5500 قطعة أثرية تروي تاريخ عمان</div><span class="site-tag">متحف</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏛️</span><div class="site-info"><div class="site-name">متحف بيت الزبير</div><div class="site-desc">6 مبانٍ تحتضن آلاف المقتنيات التراثية العمانية</div><span class="site-tag">متحف</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏛️</span><div class="site-info"><div class="site-name">متحف التاريخ الطبيعي</div><div class="site-desc">الحياة البرية والبحرية والجيولوجيا العمانية</div><span class="site-tag">متحف</span></div></div>
+      <div class="site-card"><span class="site-emoji">🎭</span><div class="site-info"><div class="site-name">دار الأوبرا السلطانية</div><div class="site-desc">أبرز المؤسسات الثقافية في الخليج • عروض عالمية</div><span class="site-tag">ثقافي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏛️</span><div class="site-info"><div class="site-name">متحف قوات السلطان المسلحة</div><div class="site-desc">التاريخ العسكري العماني عبر العصور</div><span class="site-tag">متحف</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏛️</span><div class="site-info"><div class="site-name">متحف النفط والغاز</div><div class="site-desc">قصة الصناعة النفطية في سلطنة عمان</div><span class="site-tag">متحف</span></div></div>
+      <!-- حدائق وطبيعة -->
+      <div class="site-card"><span class="site-emoji">🌿</span><div class="site-info"><div class="site-name">حديقة القرم الطبيعية</div><div class="site-desc">أكبر حديقة في عمان • أشجار القرم وشبكة المشاية</div><span class="site-tag">حديقة طبيعية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌿</span><div class="site-info"><div class="site-name">الحديقة النباتية العمانية</div><div class="site-desc">900+ نوع نباتي محلي ونادر</div><span class="site-tag">حديقة نباتية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌿</span><div class="site-info"><div class="site-name">حديقة السيفة المائية</div><div class="site-desc">ألعاب مائية وزحاليق عائلية على شاطئ السيفة</div><span class="site-tag">ترفيه مائي</span></div></div>
+      <!-- جزر -->
+      <div class="site-card"><span class="site-emoji">🏝️</span><div class="site-info"><div class="site-name">جزر الديمانيات</div><div class="site-desc">محمية بحرية ذات شعاب مرجانية ساحرة • تعشيش السلاحف</div><span class="site-tag">جزيرة محمية</span></div></div>
+      <!-- مارينا -->
+      <div class="site-card"><span class="site-emoji">⛵</span><div class="site-info"><div class="site-name">مارينا بندر الروضة</div><div class="site-desc">أنشطة بحرية متنوعة • صيد وغوص وسباحة</div><span class="site-tag">مارينا</span></div></div>
+      <div class="site-card"><span class="site-emoji">⛵</span><div class="site-info"><div class="site-name">مارينا بندر السيب</div><div class="site-desc">مرفأ اليخوت الحديث • رياضات بحرية</div><span class="site-tag">مارينا</span></div></div>
+      <!-- أكواريوم -->
+      <div class="site-card"><span class="site-emoji">🐠</span><div class="site-info"><div class="site-name">أكواريوم عمان</div><div class="site-desc">عالم البحار وأسماك القرش والكائنات البحرية</div><span class="site-tag">ترفيهي</span></div></div>
+      <!-- بوابات تاريخية -->
+      <div class="site-card"><span class="site-emoji">🏛️</span><div class="site-info"><div class="site-name">بوابة مسقط التاريخية</div><div class="site-desc">البوابة التاريخية لمدينة مسقط القديمة</div><span class="site-tag">أثري</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏙️</span><div class="site-info"><div class="site-name">مدينة مسقط القديمة</div><div class="site-desc">أزقة وحارات قديمة وبوابات تاريخية</div><span class="site-tag">حي تاريخي</span></div></div>
+      <!-- ولايات -->
+      <div class="site-card"><span class="site-emoji">⛰️</span><div class="site-info"><div class="site-name">جبل شمس (أعلى قمة)</div><div class="site-desc">أعلى قمة في عمان 3009م • وادي النخر "الجراند كانيون"</div><span class="site-tag">جبل</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي شاب</div><div class="site-desc">وادٍ ساحر بين الجبال • كهوف وشلالات وبرك فيروزية</div><span class="site-tag">وادي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي تيوي</div><div class="site-desc">وادٍ دائم الجريان بمياه عذبة وغطاء نباتي كثيف</div><span class="site-tag">وادي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي دايقه</div><div class="site-desc">ممر جبلي ضيق بمياه صافية وشلالات</div><span class="site-tag">وادي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ قريات</div><div class="site-desc">شاطئ صياديون هادئ جنوب مسقط</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">حصن قريات</div><div class="site-desc">حصن تاريخي في ولاية قريات جنوب مسقط</div><span class="site-tag">حصن</span></div></div>
+      <div class="site-card"><span class="site-emoji">🦁</span><div class="site-info"><div class="site-name">محمية طبيعية في قريات</div><div class="site-desc">محمية للمها العربي والحيوانات النادرة</div><span class="site-tag">محمية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏔️</span><div class="site-info"><div class="site-name">جبال الحجر الشرقية</div><div class="site-desc">سلسلة جبلية خلابة بطول 500 كم</div><span class="site-tag">جبال</span></div></div>
+      <div class="site-card"><span class="site-emoji">🎠</span><div class="site-info"><div class="site-name">لاند مارك عمان</div><div class="site-desc">أكبر مركز ترفيهي في السلطنة</div><span class="site-tag">ترفيهي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🛍️</span><div class="site-info"><div class="site-name">مسقط مول</div><div class="site-desc">مركز تسوق رئيسي • يضم أكواريوم عمان</div><span class="site-tag">تسوق</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏠</span><div class="site-info"><div class="site-name">قرية السلطان قابوس</div><div class="site-desc">قرية سياحية تراثية عمانية</div><span class="site-tag">قرية تراثية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌅</span><div class="site-info"><div class="site-name">كورنيش القرم</div><div class="site-desc">ممشى بحري هادئ بجانب حديقة القرم</div><span class="site-tag">كورنيش</span></div></div>
+      <div class="site-card"><span class="site-emoji">🐬</span><div class="site-info"><div class="site-name">رحلات مشاهدة الدلافين</div><div class="site-desc">أكثر من 21 نوعاً للدلافين قرب الساحل</div><span class="site-tag">نشاط بحري</span></div></div>
+      <div class="site-card"><span class="site-emoji">🎡</span><div class="site-info"><div class="site-name">كيدزانيا مسقط</div><div class="site-desc">مدينة ألعاب تعليمية للأطفال</div><span class="site-tag">ترفيه عائلي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏛️</span><div class="site-info"><div class="site-name">متحف السلطان قابوس للخيول العربية</div><div class="site-desc">تراث الخيول العربية الأصيلة في عمان</div><span class="site-tag">متحف</span></div></div>
+      <div class="site-card"><span class="site-emoji">⛪</span><div class="site-info"><div class="site-name">الكنيسة الكاثوليكية التاريخية</div><div class="site-desc">من المعالم الدينية التاريخية في مسقط</div><span class="site-tag">تاريخي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">شاطئ العذيبة</div><div class="site-desc">شاطئ حيوي قرب قلب مسقط</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🕌</span><div class="site-info"><div class="site-name">جامع الصحابي مازن بن غضوبة</div><div class="site-desc">من أوائل المساجد في عمان الإسلامية</div><span class="site-tag">تاريخي ديني</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏘️</span><div class="site-info"><div class="site-name">حي الحنو التراثي</div><div class="site-desc">حي قديم بمسقط يضم مبانٍ أثرية</div><span class="site-tag">تراث</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌿</span><div class="site-info"><div class="site-name">منتزه السيب الساحلي</div><div class="site-desc">متنزه عائلي هادئ على شاطئ خليج عمان</div><span class="site-tag">متنزه</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ بركاء</div><div class="site-desc">شاطئ هادئ شمال مسقط بتراب ذهبي ناعم</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🎨</span><div class="site-info"><div class="site-name">معرض بيت البرندة</div><div class="site-desc">صالة فنية تراثية في مسقط القديمة</div><span class="site-tag">ثقافي</span></div></div>
+      <div class="site-card"><span class="site-emoji">⛵</span><div class="site-info"><div class="site-name">ميناء قابوس الحديث</div><div class="site-desc">ميناء السفن السياحية العملاقة</div><span class="site-tag">ميناء</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌄</span><div class="site-info"><div class="site-name">جبل قمر</div><div class="site-desc">نقطة مراقبة خلابة فوق مسقط</div><span class="site-tag">جبل</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏔️</span><div class="site-info"><div class="site-name">سفوح جبل الأخضر</div><div class="site-desc">مسارات المشي الجبلي قرب مسقط</div><span class="site-tag">جبل</span></div></div>
+      <div class="site-card"><span class="site-emoji">🛺</span><div class="site-info"><div class="site-name">جولة مسقط الليلية</div><div class="site-desc">جولة على الحافلة لاكتشاف معالم العاصمة ليلاً</div><span class="site-tag">نشاط سياحي</span></div></div>
+    </div>
+  </div>
+
+  <!-- ======= الداخلية ======= -->
+  <div class="gov-section dakhiliya" id="sec-dakhiliya">
+    <div class="gov-header" onclick="toggleSection('dakhiliya')">
+      <span class="gov-icon">🏔️</span>
+      <div class="gov-title">
+        <h2>محافظة الداخلية</h2>
+        <p>عاصمة التراث • نزوى • الجبل الأخضر والأودية الخضراء</p>
+      </div>
+      <span class="gov-count">52 موقع</span>
+      <span class="toggle-icon">▲</span>
+    </div>
+    <div class="sites-grid">
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">قلعة نزوى</div><div class="site-desc">أيقونة التراث العماني • برج دائري ضخم من القرن 17</div><span class="site-tag">قلعة تاريخية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🛍️</span><div class="site-info"><div class="site-name">سوق نزوى التقليدي</div><div class="site-desc">سوق الخناجر والتمر والفضة والحرف اليدوية</div><span class="site-tag">سوق تراثي</span></div></div>
+      <div class="site-card"><span class="site-emoji">💧</span><div class="site-info"><div class="site-name">فلج دارس (تراث عالمي)</div><div class="site-desc">من أكبر الأفلاج في عمان • مدرج في قائمة اليونسكو</div><span class="site-tag">تراث عالمي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">قلعة بهلاء (تراث عالمي)</div><div class="site-desc">مدرجة في اليونسكو منذ 1987 • سور بطول 13 كم</div><span class="site-tag">تراث عالمي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">حصن جبرين</div><div class="site-desc">تحفة معمارية عمانية • نقوش وزخارف رائعة</div><span class="site-tag">حصن تاريخي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌲</span><div class="site-info"><div class="site-name">الجبل الأخضر</div><div class="site-desc">ارتفاع 3000م • مزارع الورد والخوخ والرمان</div><span class="site-tag">جبل</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌿</span><div class="site-info"><div class="site-name">محمية الجبل الأخضر الطبيعية</div><div class="site-desc">الوعل العربي والذئب والثعلب الجبلي</div><span class="site-tag">محمية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🦇</span><div class="site-info"><div class="site-name">كهف الهوتة</div><div class="site-desc">كهف أثري ممتد 5 كم يختتم ببحيرة جوفية</div><span class="site-tag">كهف</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي النخر (الجراند كانيون العماني)</div><div class="site-desc">أخدود صخري عميق بشلالات وبرك مائية دائمة</div><span class="site-tag">وادي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏘️</span><div class="site-info"><div class="site-name">قرية مسفاة العبريين</div><div class="site-desc">قرية طينية قديمة مرتفعة مع أفلاج وحدائق نخيل</div><span class="site-tag">قرية تراثية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏘️</span><div class="site-info"><div class="site-name">الحارة القديمة (الحمراء)</div><div class="site-desc">قرية طين قديمة تحتضن مسلسلات تاريخية</div><span class="site-tag">قرية تراثية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏘️</span><div class="site-info"><div class="site-name">قرية النخر</div><div class="site-desc">قرية جبلية معتدلة الطقس صيفاً</div><span class="site-tag">قرية جبلية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🦇</span><div class="site-info"><div class="site-name">كهف المعاول</div><div class="site-desc">كهف استكشافي في الجبل الأخضر</div><span class="site-tag">كهف</span></div></div>
+      <div class="site-card"><span class="site-emoji">🦇</span><div class="site-info"><div class="site-name">كهف عامر</div><div class="site-desc">كهف مغامرات جبلي</div><span class="site-tag">كهف</span></div></div>
+      <div class="site-card"><span class="site-emoji">🦇</span><div class="site-info"><div class="site-name">كهف الضبع</div><div class="site-desc">كهف طبيعي في سلسلة كهوف الجبل الأخضر</div><span class="site-tag">كهف</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌸</span><div class="site-info"><div class="site-name">مزارع ورد الطائف - الجبل الأخضر</div><div class="site-desc">حقول الورد العمانية لإنتاج ماء الورد</div><span class="site-tag">زراعي سياحي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🍑</span><div class="site-info"><div class="site-name">مزارع الفاكهة - الجبل الأخضر</div><div class="site-desc">خوخ ورمان وتين وعنب يانع</div><span class="site-tag">سياحة زراعية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🛤️</span><div class="site-info"><div class="site-name">ممشى حافة الجبل الأخضر</div><div class="site-desc">ممر "الطريق المعلق" بمنظر للوادي من 2000م</div><span class="site-tag">مسار مشي</span></div></div>
+      <div class="site-card"><span class="site-emoji">💧</span><div class="site-info"><div class="site-name">فلج الغيتين (نزوى)</div><div class="site-desc">فلج تاريخي يروي أحياء نزوى العريقة</div><span class="site-tag">فلج تراثي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">حصن بيت الرديدة</div><div class="site-desc">حصن أثري في ولاية بهلاء</div><span class="site-tag">حصن</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">قلعة الفيقين</div><div class="site-desc">قلعة تاريخية في محافظة الداخلية</div><span class="site-tag">قلعة</span></div></div>
+      <div class="site-card"><span class="site-emoji">🕌</span><div class="site-info"><div class="site-name">جامع نزوى التاريخي</div><div class="site-desc">منارة علم عمانية تاريخية</div><span class="site-tag">مسجد تاريخي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي قريات (حوض)</div><div class="site-desc">وادٍ جبلي جميل قرب نزوى</div><span class="site-tag">وادي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌿</span><div class="site-info"><div class="site-name">واحة بهلاء</div><div class="site-desc">أسواق تقليدية وحارات قديمة ومساجد أثرية</div><span class="site-tag">واحة تراثية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🛍️</span><div class="site-info"><div class="site-name">سوق بهلاء التقليدي</div><div class="site-desc">سوق أثري بمنتجات الفخار والطين والحرف اليدوية</div><span class="site-tag">سوق تراثي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي الطيور (منح)</div><div class="site-desc">وادٍ بمياه موسمية وطيور مهاجرة</div><span class="site-tag">وادي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏔️</span><div class="site-info"><div class="site-name">منطقة عبّا الجبلية</div><div class="site-desc">طريق جبلي خلاب بين الداخلية والشرقية</div><span class="site-tag">جبال</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي سمائل</div><div class="site-desc">وادٍ تاريخي مرتبط بأول من أسلم في عمان</div><span class="site-tag">وادي تاريخي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🕌</span><div class="site-info"><div class="site-name">مسجد مازن بن غضوبة (سمائل)</div><div class="site-desc">أول مسجد بني في عمان بعد الإسلام</div><span class="site-tag">تاريخي ديني</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">قلعة المضيبي</div><div class="site-desc">قلعة تراثية في ولاية المضيبي</div><span class="site-tag">قلعة</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌿</span><div class="site-info"><div class="site-name">منتزه حاور (وادي بني خالد)</div><div class="site-desc">مناظر طبيعية ساحرة وشلالات</div><span class="site-tag">متنزه طبيعي</span></div></div>
+      <div class="site-card"><span class="site-emoji">💧</span><div class="site-info"><div class="site-name">فلج السمدي (سمائل)</div><div class="site-desc">أشهر الأفلاج في ولاية سمائل</div><span class="site-tag">فلج</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏡</span><div class="site-info"><div class="site-name">بيت الجبل (الحمراء)</div><div class="site-desc">متحف شعبي يرسم الحياة العمانية القديمة</div><span class="site-tag">متحف</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏡</span><div class="site-info"><div class="site-name">بيت الصفاة (الحمراء)</div><div class="site-desc">معرض للحياة العمانية التقليدية</div><span class="site-tag">تراثي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌿</span><div class="site-info"><div class="site-name">أشجار الزيتون البري - الجبل الأخضر</div><div class="site-desc">أشجار قديمة تعمّر مئات السنين</div><span class="site-tag">طبيعي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌄</span><div class="site-info"><div class="site-name">مرصد الجبل الأخضر الفلكي</div><div class="site-desc">مرصد لمشاهدة النجوم بعيداً عن التلوث الضوئي</div><span class="site-tag">علمي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏔️</span><div class="site-info"><div class="site-name">جبل هاط</div><div class="site-desc">ارتفاع 2000م في ولاية الحمراء • طريق جبلي بديع</div><span class="site-tag">جبل</span></div></div>
+      <div class="site-card"><span class="site-emoji">🕌</span><div class="site-info"><div class="site-name">جامع العارض التاريخي (الحمراء)</div><div class="site-desc">جامع أثري يعود للقرن الرابع الهجري • 26 أسطوانة</div><span class="site-tag">مسجد تاريخي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">أبراج نزوى الدفاعية</div><div class="site-desc">أبراج عسكرية قديمة حول مدينة نزوى</div><span class="site-tag">أثري</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌿</span><div class="site-info"><div class="site-name">حديقة فلج دارس العامة</div><div class="site-desc">حديقة بمسقط الماء التقليدي والخضرة والبرك</div><span class="site-tag">حديقة</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي البيضاء (أدم)</div><div class="site-desc">وادٍ موسمي جنوب الداخلية</div><span class="site-tag">وادي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🐪</span><div class="site-info"><div class="site-name">سوق الإبل (نزوى)</div><div class="site-desc">سوق الجمل التقليدي ميراث حضاري نادر</div><span class="site-tag">سوق تراثي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🥊</span><div class="site-info"><div class="site-name">صراع الثيران (نزوى)</div><div class="site-desc">تقليد عماني أصيل كل جمعة شتاءً</div><span class="site-tag">تراث شعبي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">عين الثوارة (نخل)</div><div class="site-desc">عيون مياه طبيعية ساخنة بالجبال</div><span class="site-tag">عين مائية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏠</span><div class="site-info"><div class="site-name">بيت النعمة (الحمراء)</div><div class="site-desc">تحفة معمارية طينية بمقاييس عصرها</div><span class="site-tag">تراث معماري</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌿</span><div class="site-info"><div class="site-name">قرية بني صبح</div><div class="site-desc">قرية تاريخية بوابة الجبل الأخضر</div><span class="site-tag">قرية تراثية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي المعيدين</div><div class="site-desc">وادٍ جبلي خلاب في ولاية الحمراء</div><span class="site-tag">وادي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">حصون تنوف</div><div class="site-desc">حصون قديمة في ولاية نزوى</div><span class="site-tag">حصن</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌿</span><div class="site-info"><div class="site-name">وادي كلبوه</div><div class="site-desc">وادٍ بالمياه الدائمة الجريان قرب إزكي</div><span class="site-tag">وادي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏡</span><div class="site-info"><div class="site-name">قرية الشراجة (الحمراء)</div><div class="site-desc">قرية جبلية قديمة محفورة في الصخر</div><span class="site-tag">قرية تراثية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي المياه</div><div class="site-desc">وادٍ موسمي في منطقة نزوى</div><span class="site-tag">وادي</span></div></div>
+    </div>
+  </div>
+
+  <!-- ======= الشرقية ======= -->
+  <div class="gov-section sharqiya" id="sec-sharqiya">
+    <div class="gov-header" onclick="toggleSection('sharqiya')">
+      <span class="gov-icon">🐢</span>
+      <div class="gov-title">
+        <h2>محافظتا الشرقية (شمال وجنوب)</h2>
+        <p>صور • وادي بني خالد • رأس الحد • رمال وهيبة</p>
+      </div>
+      <span class="gov-count">58 موقع</span>
+      <span class="toggle-icon">▲</span>
+    </div>
+    <div class="sites-grid">
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي بني خالد</div><div class="site-desc">وادٍ دائم الجريان 49 كم • برك مائية صافية وأسماك</div><span class="site-tag">وادي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🐢</span><div class="site-info"><div class="site-name">محمية السلاحف - رأس الحد</div><div class="site-desc">أكثر من 20,000 سلحفاة • أول بقعة تشرق عليها الشمس عربياً</div><span class="site-tag">محمية طبيعية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ رأس الحد</div><div class="site-desc">أول بقعة في الجزيرة العربية تشرق عليها الشمس</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي الشاب</div><div class="site-desc">مغامرة بالقوارب • كهوف وشلالات فيروزية</div><span class="site-tag">وادي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏜️</span><div class="site-info"><div class="site-name">رمال وهيبة (صحراء الشرقية)</div><div class="site-desc">كثبان ذهبية شاهقة • رحلات صحراوية وتخييم</div><span class="site-tag">صحراء</span></div></div>
+      <div class="site-card"><span class="site-emoji">⛵</span><div class="site-info"><div class="site-name">ورشة بناء السفن التقليدية (صور)</div><div class="site-desc">أشهر مراكز صناعة الداو الخشبية في العالم</div><span class="site-tag">تراث بحري</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">قلعة العيجة (صور)</div><div class="site-desc">قلعة تطل على ميناء صور بأربعة أبراج</div><span class="site-tag">قلعة</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">حصن رأس الحد</div><div class="site-desc">حصن عمره 450 عاماً بثلاثة أبراج ونفق سري</div><span class="site-tag">حصن تاريخي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">حصن السنيسلة</div><div class="site-desc">حصن دفاعي مطل على بحر عمان</div><span class="site-tag">حصن</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">حصن المنترب</div><div class="site-desc">حصن أثري في المنطقة الشرقية</div><span class="site-tag">حصن</span></div></div>
+      <div class="site-card"><span class="site-emoji">🕌</span><div class="site-info"><div class="site-name">قلهات التاريخية</div><div class="site-desc">مدينة أثرية تعود لـ 2500 ق.م على ساحل الشرقية</div><span class="site-tag">موقع أثري</span></div></div>
+      <div class="site-card"><span class="site-emoji">💡</span><div class="site-info"><div class="site-name">منارة العيجة (صور)</div><div class="site-desc">منارة برتغالية تاريخية توجه السفن للميناء</div><span class="site-tag">معلم تاريخي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🦇</span><div class="site-info"><div class="site-name">كهف مجلس الجن</div><div class="site-desc">ثاني أكبر كهف في العالم • يتسع لـ 7 طائرات بوينج</div><span class="site-tag">كهف عالمي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🦇</span><div class="site-info"><div class="site-name">كهف مقل</div><div class="site-desc">كهف سياحي في وادي بني خالد</div><span class="site-tag">كهف</span></div></div>
+      <div class="site-card"><span class="site-emoji">💧</span><div class="site-info"><div class="site-name">شلالات حاور</div><div class="site-desc">شلالات خلابة قرب قرية بضعة • رياضة المغامرات</div><span class="site-tag">شلال</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ الأشخرة</div><div class="site-desc">كثبان فضية ومياه هادئة • يزدهر صيفاً بالرياح الموسمية</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ السويح</div><div class="site-desc">شاطئ مثالي للتزلج الشراعي على الماء</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🦁</span><div class="site-info"><div class="site-name">حديقة السليل للغزال العربي</div><div class="site-desc">220 كم² تحتضن الغزال العربي النادر</div><span class="site-tag">محمية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏝️</span><div class="site-info"><div class="site-name">جزيرة مصيرة</div><div class="site-desc">جزيرة معزولة برياح موسمية ومراكب غاصت</div><span class="site-tag">جزيرة</span></div></div>
+      <div class="site-card"><span class="site-emoji">💧</span><div class="site-info"><div class="site-name">فلج الجيلة (تراث عالمي)</div><div class="site-desc">فلج عيني مدرج في اليونسكو 2006</div><span class="site-tag">تراث عالمي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">حصن جعلان بني بو حسن</div><div class="site-desc">حصن تاريخي في جنوب الشرقية</div><span class="site-tag">حصن</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">حصن جعلان بني بو علي</div><div class="site-desc">حصن تراثي بجنوب الشرقية</div><span class="site-tag">حصن</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏡</span><div class="site-info"><div class="site-name">قرية المنزفة</div><div class="site-desc">قرية تراثية قديمة بالمنطقة الشرقية</div><span class="site-tag">قرية تراثية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">عين حمودة</div><div class="site-desc">عين طبيعية في وادي بني خالد</div><span class="site-tag">عين مائية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">عين الصاروج</div><div class="site-desc">عين مائية رائعة في وادي بني خالد</div><span class="site-tag">عين مائية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ طيوي</div><div class="site-desc">شاطئ جميل في شمال ولاية صور</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏔️</span><div class="site-info"><div class="site-name">أبراج الجيلة الأثرية</div><div class="site-desc">90 برجاً أثرياً على ارتفاع 2000م اكتشف عام 1991</div><span class="site-tag">أثري</span></div></div>
+      <div class="site-card"><span class="site-emoji">🗿</span><div class="site-info"><div class="site-name">موقع قلهات الأثري</div><div class="site-desc">آثار من عصر ما قبل الإسلام وما بعده</div><span class="site-tag">أثري</span></div></div>
+      <div class="site-card"><span class="site-emoji">🐢</span><div class="site-info"><div class="site-name">شاطئ أصيلة (مصيرة)</div><div class="site-desc">شاطئ ساحلي في جزيرة مصيرة</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي طيوي</div><div class="site-desc">وادٍ دائم الجريان بمياه وفيرة ومزارع خضراء</div><span class="site-tag">وادي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏜️</span><div class="site-info"><div class="site-name">مخيمات الصحراء (وهيبة)</div><div class="site-desc">تجربة التخييم الصحراوي مع سكان البدو</div><span class="site-tag">سياحة صحراوية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🐫</span><div class="site-info"><div class="site-name">قرى أبناء البادية (وهيبة)</div><div class="site-desc">زيارة خيام القبائل الرحّالة في صحراء وهيبة</div><span class="site-tag">تراث بدوي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ بلد بني بو علي</div><div class="site-desc">شاطئ بكر بجنوب الشرقية</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌿</span><div class="site-info"><div class="site-name">غابات أشجار القرم (قريات)</div><div class="site-desc">غابة أشجار المانغروف على الساحل</div><span class="site-tag">طبيعي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">خليج شاطئ فوهان</div><div class="site-desc">خليج هادئ للغوص والسنوركلينج</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🐠</span><div class="site-info"><div class="site-name">جزيرة شعنزي</div><div class="site-desc">غوص وسلاحف بحرية وشواطئ رملية نقية</div><span class="site-tag">جزيرة</span></div></div>
+      <div class="site-card"><span class="site-emoji">💧</span><div class="site-info"><div class="site-name">عين دوة (بني خالد)</div><div class="site-desc">عين طبيعية ثالثة في وادي بني خالد</div><span class="site-tag">عين مائية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏘️</span><div class="site-info"><div class="site-name">قرية بضعة الجبلية</div><div class="site-desc">قرية جبلية تحوطها الطبيعة من كل اتجاه</div><span class="site-tag">قرية جبلية</span></div></div>
+    </div>
+  </div>
+
+  <!-- ======= ظفار ======= -->
+  <div class="gov-section dhofar" id="sec-dhofar">
+    <div class="gov-header" onclick="toggleSection('dhofar')">
+      <span class="gov-icon">🌿</span>
+      <div class="gov-title">
+        <h2>محافظة ظفار</h2>
+        <p>صلالة • خريف ظفار • اللبان والعيون والشلالات</p>
+      </div>
+      <span class="gov-count">62 موقع</span>
+      <span class="toggle-icon">▲</span>
+    </div>
+    <div class="sites-grid">
+      <div class="site-card"><span class="site-emoji">💧</span><div class="site-info"><div class="site-name">عين رزات</div><div class="site-desc">أهم مصدر مياه في ظفار • كهوف طبيعية وخضرة دائمة</div><span class="site-tag">عين مائية</span></div></div>
+      <div class="site-card"><span class="site-emoji">💧</span><div class="site-info"><div class="site-name">عين صحلنوت</div><div class="site-desc">وادي جميل بمياه وشجر وضباب الخريف</div><span class="site-tag">عين مائية</span></div></div>
+      <div class="site-card"><span class="site-emoji">💧</span><div class="site-info"><div class="site-name">عين جرزيز (أقدم عيون ظفار)</div><div class="site-desc">أقدم العيون المائية في محافظة ظفار</div><span class="site-tag">عين مائية</span></div></div>
+      <div class="site-card"><span class="site-emoji">💧</span><div class="site-info"><div class="site-name">عين حمران</div><div class="site-desc">عين طبيعية غزيرة بكهوف مهيأة للزوار</div><span class="site-tag">عين مائية</span></div></div>
+      <div class="site-card"><span class="site-emoji">💧</span><div class="site-info"><div class="site-name">عين طبراق</div><div class="site-desc">شلال وعين خلابة في خريف ظفار</div><span class="site-tag">شلال</span></div></div>
+      <div class="site-card"><span class="site-emoji">💧</span><div class="site-info"><div class="site-name">عين قشروب</div><div class="site-desc">عين طبيعية بين الجبال الخضراء</div><span class="site-tag">عين مائية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌿</span><div class="site-info"><div class="site-name">سهل أتين</div><div class="site-desc">سهل خريفي خلاب • تجمعات عائلية وأنشطة</div><span class="site-tag">منطقة طبيعية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي دربات</div><div class="site-desc">وادٍ خريفي ساحر بالضباب والخضرة والمياه</div><span class="site-tag">وادي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ المغسيل</div><div class="site-desc">نافورات مياه طبيعية تخترق الصخر • كهف المرنيف</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ الفزايا</div><div class="site-desc">رمال بيضاء ومياه زرقاء ساحرة</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ الدهاريز</div><div class="site-desc">شاطئ صلالة الأبرز بالقرب من المدينة</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🛍️</span><div class="site-info"><div class="site-name">سوق الحصن (اللبان والبخور)</div><div class="site-desc">أشهر سوق لبان في العالم • العطور والذهب</div><span class="site-tag">سوق تراثي</span></div></div>
+      <div class="site-card"><span class="site-emoji">⛵</span><div class="site-info"><div class="site-name">ميناء مرباط التاريخي</div><div class="site-desc">ميناء عريق بشاطئ وسوق وحصن قديم</div><span class="site-tag">ميناء تاريخي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">قصر الحصن (صلالة)</div><div class="site-desc">قصر ملكي تاريخي في قلب صلالة</div><span class="site-tag">قصر</span></div></div>
+      <div class="site-card"><span class="site-emoji">🦇</span><div class="site-info"><div class="site-name">كهف المرنيف</div><div class="site-desc">كهف بنافورات طبيعية تخرج من الصخر</div><span class="site-tag">كهف</span></div></div>
+      <div class="site-card"><span class="site-emoji">🦇</span><div class="site-info"><div class="site-name">كهف طيق</div><div class="site-desc">من أكبر الكهوف في العالم • 170,000 م³</div><span class="site-tag">كهف عالمي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🦋</span><div class="site-info"><div class="site-name">حفرة إذابة طوي</div><div class="site-desc">من أكبر حفر الإذابة الطبيعية المحلية (المرتبة 48 عالمياً)</div><span class="site-tag">ظاهرة جيولوجية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌲</span><div class="site-info"><div class="site-name">جبل سمحان</div><div class="site-desc">أشجار الباوباب العملاقة • المحمية الطبيعية الكبرى</div><span class="site-tag">جبل محمية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">منطقة الجاذبية (خدعة بصرية)</div><div class="site-desc">ظاهرة بصرية فريدة تبدو فيها السيارات تسير صعوداً</div><span class="site-tag">ظاهرة فريدة</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌿</span><div class="site-info"><div class="site-name">عين حشير (أشجار الباوباب)</div><div class="site-desc">أشجار باوباب عملاقة عمرها آلاف السنين</div><span class="site-tag">طبيعي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏘️</span><div class="site-info"><div class="site-name">ضلكوت الساحلية</div><div class="site-desc">قرية ساحلية جنوبية خلابة قرب الحدود اليمنية</div><span class="site-tag">قرية ساحلية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ مرباط القديم</div><div class="site-desc">شاطئ أثري تاريخي جميل</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🎪</span><div class="site-info"><div class="site-name">مهرجان صلالة للسياحة</div><div class="site-desc">مهرجان سنوي يناير-أغسطس • موسيقى وفنون وحرف</div><span class="site-tag">مهرجان</span></div></div>
+      <div class="site-card"><span class="site-emoji">🗿</span><div class="site-info"><div class="site-name">موقع سمهرم الأثري</div><div class="site-desc">مدينة بخور قديمة مدرجة في التراث العالمي</div><span class="site-tag">تراث عالمي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🗿</span><div class="site-info"><div class="site-name">موقع الشيصر (أوبار)</div><div class="site-desc">المدينة المفقودة التي ذكرها القرآن الكريم</div><span class="site-tag">تراث عالمي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌳</span><div class="site-info"><div class="site-name">غابات اللبان</div><div class="site-desc">أشجار اللبان المقدسة التي ميّزت ظفار عبر التاريخ</div><span class="site-tag">طبيعي تاريخي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🦁</span><div class="site-info"><div class="site-name">محمية جبل سمحان للحيوانات</div><div class="site-desc">الفهد العربي والنمر والوعل في بيئتها الطبيعية</div><span class="site-tag">محمية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ رخيوت</div><div class="site-desc">شاطئ خريفي خلاب بالغرب الجنوبي</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏝️</span><div class="site-info"><div class="site-name">جزر الحلانيات</div><div class="site-desc">5 جزر بعيدة عن السواحل بحياة بحرية غنية</div><span class="site-tag">جزر</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">كورنيش الحافة</div><div class="site-desc">واجهة بحرية بتصميم عماني أصيل ومحلات تراثية</div><span class="site-tag">كورنيش</span></div></div>
+      <div class="site-card"><span class="site-emoji">💧</span><div class="site-info"><div class="site-name">وادي داربات الجوفي</div><div class="site-desc">شلالات ضخمة عند الأمطار الموسمية</div><span class="site-tag">شلال</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌲</span><div class="site-info"><div class="site-name">جبل القمر</div><div class="site-desc">مرتفعات غربية ضبابية ذات جمال آسر</div><span class="site-tag">جبل</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">حصن مرباط</div><div class="site-desc">حصن تاريخي في ولاية مرباط بجنوب ظفار</div><span class="site-tag">حصن</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌄</span><div class="site-info"><div class="site-name">شروق الشمس من جبال ظفار</div><div class="site-desc">منظر خريفي استثنائي من قمم الجبال المضبّبة</div><span class="site-tag">طبيعي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🐄</span><div class="site-info"><div class="site-name">قطعان الأبقار الحرة في الجبال</div><div class="site-desc">أبقار الجبل الحرة تجوب سهول الخريف الخضراء</div><span class="site-tag">طبيعي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ سدح</div><div class="site-desc">شاطئ نائي في أقصى الجنوب الشرقي لظفار</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌿</span><div class="site-info"><div class="site-name">متنزه عودة الماضي (المغسيل)</div><div class="site-desc">منتزه بالقرب من شاطئ المغسيل</div><span class="site-tag">متنزه</span></div></div>
+      <div class="site-card"><span class="site-emoji">🎈</span><div class="site-info"><div class="site-name">كرنفال المناطيد الدولي</div><div class="site-desc">أول مهرجان مناطيد في الخليج • فوق سهول ظفار</div><span class="site-tag">مهرجان</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">شلالات الخريف</div><div class="site-desc">شلالات موسمية في جميع أنحاء الجبال خريفاً</div><span class="site-tag">شلال</span></div></div>
+      <div class="site-card"><span class="site-emoji">🕌</span><div class="site-info"><div class="site-name">مسجد سليمان الجامع (صلالة)</div><div class="site-desc">أحد أهم مساجد صلالة التاريخية</div><span class="site-tag">مسجد</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">خور رؤوري</div><div class="site-desc">خور تاريخي بجوار موقع سمهرم الأثري</div><span class="site-tag">خور</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ طاقة</div><div class="site-desc">شاطئ خريفي مع مياه الموسون الزرقاء</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌿</span><div class="site-info"><div class="site-name">متنزه السلطانية الخضراء</div><div class="site-desc">حديقة صلالة الكبرى للعائلات</div><span class="site-tag">متنزه</span></div></div>
+      <div class="site-card"><span class="site-emoji">🐟</span><div class="site-info"><div class="site-name">سوق السمك المركزي صلالة</div><div class="site-desc">سوق أسماك الخليج الطازج كل صباح</div><span class="site-tag">سوق</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">خور الداربات</div><div class="site-desc">خور جميل بصلالة تتجمع فيه الطيور</div><span class="site-tag">خور</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">خور بلحاف</div><div class="site-desc">خور طبيعي بثمريت الجنوبية</div><span class="site-tag">خور</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏔️</span><div class="site-info"><div class="site-name">مرتفعات ثمريت الصحراوية</div><div class="site-desc">تلال صحراوية تحد الربع الخالي شمالاً</div><span class="site-tag">صحراء</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏡</span><div class="site-info"><div class="site-name">قرى الجبل التقليدية (ظفار)</div><div class="site-desc">قرى جبلية بيوتها مبنية من الحجر والأخشاب</div><span class="site-tag">قرية تراثية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">خور مقشن</div><div class="site-desc">خور ساحلي في ولاية مقشن الغربية</div><span class="site-tag">خور</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ مقشن</div><div class="site-desc">شاطئ نائي في غرب ظفار</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌿</span><div class="site-info"><div class="site-name">المرتفعات الخضراء في الخريف</div><div class="site-desc">ظاهرة مناخية فريدة تحول الجبال للون الأخضر</div><span class="site-tag">ظاهرة مناخية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🛍️</span><div class="site-info"><div class="site-name">سوق اللبان المركزي</div><div class="site-desc">سوق بخور اللبان العماني الأصيل</div><span class="site-tag">سوق</span></div></div>
+      <div class="site-card"><span class="site-emoji">🗺️</span><div class="site-info"><div class="site-name">متحف أرض اللبان (صلالة)</div><div class="site-desc">يروي قصة اللبان كطريق تجاري دولي قديم</div><span class="site-tag">متحف</span></div></div>
+    </div>
+  </div>
+
+  <!-- ======= مسندم ======= -->
+  <div class="gov-section musandam" id="sec-musandam">
+    <div class="gov-header" onclick="toggleSection('musandam')">
+      <span class="gov-icon">⛵</span>
+      <div class="gov-title">
+        <h2>محافظة مسندم</h2>
+        <p>"النرويج العربية" • مضايق وخيران وجبال شاهقة</p>
+      </div>
+      <span class="gov-count">34 موقع</span>
+      <span class="toggle-icon">▲</span>
+    </div>
+    <div class="sites-grid">
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">قلعة خصب</div><div class="site-desc">قلعة برتغالية من القرن 17 • متحف المشغولات اليدوية</div><span class="site-tag">قلعة تاريخية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">خور نجد</div><div class="site-desc">أجمل خور في مسندم • محاط بجبال وبحر وصحراء</div><span class="site-tag">خور</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">مضايق مسندم البحرية</div><div class="site-desc">صخور شاهقة تعلو البحر • رحلات القارب الشراعي</div><span class="site-tag">مضايق</span></div></div>
+      <div class="site-card"><span class="site-emoji">⛰️</span><div class="site-info"><div class="site-name">جبل الحريم</div><div class="site-desc">أعلى قمة في مسندم 2087م • أحافير رخويات قديمة</div><span class="site-tag">جبل</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏝️</span><div class="site-info"><div class="site-name">جزيرة التلغراف</div><div class="site-desc">جزيرة تاريخية كانت قاعدة الكيبل البريطاني 1860</div><span class="site-tag">جزيرة تاريخية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏝️</span><div class="site-info"><div class="site-name">جزيرة سلامة وبناتها</div><div class="site-desc">ثلاث جزر في مضيق هرمز • آثار قديمة وشعاب مرجانية</div><span class="site-tag">جزر</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏝️</span><div class="site-info"><div class="site-name">جزيرة أم الطير</div><div class="site-desc">محطة الطيور المهاجرة • مثالية للغطس</div><span class="site-tag">جزيرة</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏝️</span><div class="site-info"><div class="site-name">جزيرة أم الغنم</div><div class="site-desc">أكبر جزر مسندم بإطلالة على مضيق هرمز</div><span class="site-tag">جزيرة</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏝️</span><div class="site-info"><div class="site-name">جزيرة صيبي</div><div class="site-desc">شاطئ هلالي رملي جميل • مثالية لقوارب الكاياك</div><span class="site-tag">جزيرة</span></div></div>
+      <div class="site-card"><span class="site-emoji">🚤</span><div class="site-info"><div class="site-name">رحلات المراكب الشراعية (الداو)</div><div class="site-desc">إبحار حول المضايق ومشاهدة الدلافين</div><span class="site-tag">نشاط بحري</span></div></div>
+      <div class="site-card"><span class="site-emoji">🐬</span><div class="site-info"><div class="site-name">مشاهدة الدلافين (خور خصب)</div><div class="site-desc">أسراب الدلافين تسبح بجانب القوارب</div><span class="site-tag">نشاط بحري</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏊</span><div class="site-info"><div class="site-name">الغوص في مسندم</div><div class="site-desc">شعاب مرجانية بكر وشفافية مائية استثنائية</div><span class="site-tag">نشاط بحري</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏘️</span><div class="site-info"><div class="site-name">قرية تاوي</div><div class="site-desc">نقوش ورسومات صخرية من عصور ما قبل التاريخ</div><span class="site-tag">قرية أثرية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏘️</span><div class="site-info"><div class="site-name">قرية شيصة الساحلية</div><div class="site-desc">قرية يصلها القارب فقط في أقصى الشمال</div><span class="site-tag">قرية نائية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏘️</span><div class="site-info"><div class="site-name">قرية كمزار</div><div class="site-desc">قرية ساحلية معزولة تتكلم لهجة كمزارية فريدة</div><span class="site-tag">قرية فريدة</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">خور شم</div><div class="site-desc">خور طوله 20 كم يصله البحر فقط • جزيرة التلغراف</div><span class="site-tag">خور</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌄</span><div class="site-info"><div class="site-name">مشرف مضيق هرمز</div><div class="site-desc">أهم ممر مائي في العالم • 90% من صادرات نفط الخليج</div><span class="site-tag">معلم</span></div></div>
+      <div class="site-card"><span class="site-emoji">⛺</span><div class="site-info"><div class="site-name">التخييم في شاطئ بصه</div><div class="site-desc">تخييم بين المضايق تحت النجوم</div><span class="site-tag">تخييم</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏔️</span><div class="site-info"><div class="site-name">مسارات المشي الجبلية</div><div class="site-desc">مسارات هايكنج بين قرى الجبال الشاهقة</div><span class="site-tag">مشي جبلي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏘️</span><div class="site-info"><div class="site-name">قرية ليما</div><div class="site-desc">قرية ساحلية شمال شرق مسندم</div><span class="site-tag">قرية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">خور الحبلين</div><div class="site-desc">خور بحري بجزيرة أم الطير وأخواتها</div><span class="site-tag">خور</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ دبا البيعة</div><div class="site-desc">شاطئ جنوب شرق مسندم بهدوء تام</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏺</span><div class="site-info"><div class="site-name">أحافير جبل الحريم</div><div class="site-desc">أحافير رخويات وأسماك على ارتفاع 1600م</div><span class="site-tag">أثري جيولوجي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌿</span><div class="site-info"><div class="site-name">منتزهات خصب الطبيعية</div><div class="site-desc">الروضة والسي والخالدية • متنزهات ساحلية</div><span class="site-tag">متنزه</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي خن</div><div class="site-desc">وادٍ جبلي خلاب في ولاية خصب</div><span class="site-tag">وادي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🚣</span><div class="site-info"><div class="site-name">الكاياك في المضايق</div><div class="site-desc">التجديف بين الجبال والبحر في هدوء تام</div><span class="site-tag">رياضة مائية</span></div></div>
+      <div class="site-card"><span class="site-emoji">⛵</span><div class="site-info"><div class="site-name">ميناء خصب</div><div class="site-desc">ميناء تجاري وسياحي يخدم المحافظة</div><span class="site-tag">ميناء</span></div></div>
+      <div class="site-card"><span class="site-emoji">⭐</span><div class="site-info"><div class="site-name">مشاهدة النجوم (مسندم)</div><div class="site-desc">سماء صافية بعيدة عن التلوث الضوئي</div><span class="site-tag">فلكي</span></div></div>
+    </div>
+  </div>
+
+  <!-- ======= الباطنة ======= -->
+  <div class="gov-section batinah" id="sec-batinah">
+    <div class="gov-header" onclick="toggleSection('batinah')">
+      <span class="gov-icon">🌴</span>
+      <div class="gov-title">
+        <h2>محافظتا الباطنة (شمال وجنوب)</h2>
+        <p>صحار • الرستاق • نخل • قلاع وعيون وشواطئ</p>
+      </div>
+      <span class="gov-count">48 موقع</span>
+      <span class="toggle-icon">▲</span>
+    </div>
+    <div class="sites-grid">
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">قلعة الرستاق</div><div class="site-desc">عاصمة الدولة اليعربية والبوسعيدية • قلعة شامخة</div><span class="site-tag">قلعة تاريخية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">قلعة صحار</div><div class="site-desc">تعود للقرن 14 • تضم نفقاً يمتد 10 كم</div><span class="site-tag">قلعة تاريخية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">حصن الحزم</div><div class="site-desc">حصن بوابات خشبية عملاقة ومصاب للزيت المغلي</div><span class="site-tag">حصن تاريخي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">قلعة نخل</div><div class="site-desc">قلعة على منحدر جبلي بإطلالة على الواحة</div><span class="site-tag">قلعة</span></div></div>
+      <div class="site-card"><span class="site-emoji">💧</span><div class="site-info"><div class="site-name">عين الكسفة (الرستاق)</div><div class="site-desc">عيون 45° مياه كبريتية علاجية للروماتيزم والأمراض الجلدية</div><span class="site-tag">عين علاجية</span></div></div>
+      <div class="site-card"><span class="site-emoji">💧</span><div class="site-info"><div class="site-name">عين الثوارة (نخل)</div><div class="site-desc">عيون مياه ساخنة طبيعية في سفح الجبال</div><span class="site-tag">عين مائية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي بني عوف</div><div class="site-desc">وادٍ جبلي ضيق يتخلله نهر ونخيل وكهوف</div><span class="site-tag">وادي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي الحوقين</div><div class="site-desc">وادٍ جبلي مميز بمناظر طبيعية ساحرة</div><span class="site-tag">وادي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي الأبيض (نخل)</div><div class="site-desc">وادٍ جميل بنخيل ومنازل طينية على الضفاف</div><span class="site-tag">وادي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي المعاول</div><div class="site-desc">وادٍ تاريخي يربط الداخلية بالباطنة</div><span class="site-tag">وادي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي حيبي (صحار)</div><div class="site-desc">وادٍ يبعد 60 كم عن صحار بمنظر جبلي جميل</div><span class="site-tag">وادي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي عاهن (صحار)</div><div class="site-desc">وادٍ ساحر على أطراف صحار الجبلية</div><span class="site-tag">وادي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ صحار</div><div class="site-desc">شاطئ طويل على خليج عمان مع كورنيش حيوي</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ شناص</div><div class="site-desc">شاطئ في أقصى شمال الباطنة</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ لوى</div><div class="site-desc">شاطئ هادئ بشناص شمال الباطنة</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ صحم</div><div class="site-desc">شاطئ رملي هادئ وسط الباطنة</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ بركاء</div><div class="site-desc">شاطئ جنوب الباطنة بالقرب من مسقط</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌿</span><div class="site-info"><div class="site-name">شجرة الماسوة النادرة (لوى)</div><div class="site-desc">شجرة نادرة لا توجد إلا في ولاية لوى بالعالم</div><span class="site-tag">طبيعي نادر</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌿</span><div class="site-info"><div class="site-name">شجرة الديباج النادرة (السويق)</div><div class="site-desc">شجرة نادرة تفرد بها ولاية السويق</div><span class="site-tag">طبيعي نادر</span></div></div>
+      <div class="site-card"><span class="site-emoji">💧</span><div class="site-info"><div class="site-name">فلج العوابي</div><div class="site-desc">أفلاج عريقة تروي واحة العوابي الجبلية</div><span class="site-tag">فلج</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏔️</span><div class="site-info"><div class="site-name">جبل العوابي</div><div class="site-desc">جبل خضر يطل على الباطنة وسهولها</div><span class="site-tag">جبل</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">قلعة الشماء (صحار)</div><div class="site-desc">قلعة تاريخية أثرية في ولاية صحار</div><span class="site-tag">قلعة</span></div></div>
+      <div class="site-card"><span class="site-emoji">🦇</span><div class="site-info"><div class="site-name">كهف السنقحة (الرستاق)</div><div class="site-desc">كهف طبيعي يجذب محبي الاستكشاف والمغامرة</div><span class="site-tag">كهف</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي السحتن</div><div class="site-desc">وادٍ جميل يشق طريقه بين الجبال نحو الباطنة</div><span class="site-tag">وادي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🛍️</span><div class="site-info"><div class="site-name">سوق أسماك صحار</div><div class="site-desc">أشهر سوق سمك على الباطنة</div><span class="site-tag">سوق</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏺</span><div class="site-info"><div class="site-name">آثار صحار النحاسية</div><div class="site-desc">مواقع استخراج النحاس من عصور ما قبل الإسلام</div><span class="site-tag">أثري</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌴</span><div class="site-info"><div class="site-name">واحات النخيل (سمائل)</div><div class="site-desc">واحات نخيل ممتدة على طول وادي سمائل الرئيسي</div><span class="site-tag">واحة</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">قلعة بيت المقحم (الباطنة)</div><div class="site-desc">تعكس الحياة الزراعية التاريخية</div><span class="site-tag">قلعة</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي بني خروص</div><div class="site-desc">وادٍ موسمي في جبال الباطنة</div><span class="site-tag">وادي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌿</span><div class="site-info"><div class="site-name">حديقة الرستاق العامة</div><div class="site-desc">حديقة ترفيهية بمحاذاة قلعة الرستاق</div><span class="site-tag">حديقة</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏺</span><div class="site-info"><div class="site-name">متحف صحار التراثي</div><div class="site-desc">آثار نحاسية ومرسوم وتراث بحري</div><span class="site-tag">متحف</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌿</span><div class="site-info"><div class="site-name">منتزهات بركاء</div><div class="site-desc">منتزهات ومرافق سياحية متعددة</div><span class="site-tag">متنزه</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي ضحك</div><div class="site-desc">وادٍ جبلي في منطقة جنوب الباطنة</div><span class="site-tag">وادي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">أبراج المراقبة التاريخية</div><div class="site-desc">أبراج مراقبة قديمة على قمم الجبال</div><span class="site-tag">أثري</span></div></div>
+      <div class="site-card"><span class="site-emoji">🐠</span><div class="site-info"><div class="site-name">الشعاب المرجانية (بركاء)</div><div class="site-desc">شعاب مرجانية للغوص قرب شاطئ بركاء</div><span class="site-tag">غوص</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي المياسرة</div><div class="site-desc">وادٍ ساحر بين الجبال</div><span class="site-tag">وادي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">حصن الخبوص</div><div class="site-desc">حصن تاريخي في منطقة الباطنة</div><span class="site-tag">حصن</span></div></div>
+    </div>
+  </div>
+
+  <!-- ======= الظاهرة ======= -->
+  <div class="gov-section zahira" id="sec-zahira">
+    <div class="gov-header" onclick="toggleSection('zahira')">
+      <span class="gov-icon">🏺</span>
+      <div class="gov-title">
+        <h2>محافظة الظاهرة</h2>
+        <p>عبري • مقابر بات (تراث عالمي) • السياحة الصحراوية</p>
+      </div>
+      <span class="gov-count">28 موقع</span>
+      <span class="toggle-icon">▲</span>
+    </div>
+    <div class="sites-grid">
+      <div class="site-card"><span class="site-emoji">🗿</span><div class="site-info"><div class="site-name">مقابر بات (تراث عالمي)</div><div class="site-desc">أبراج جنائزية من العصر البرونزي مدرجة في اليونسكو</div><span class="site-tag">تراث عالمي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">قلعة عبري</div><div class="site-desc">قلعة عبري التاريخية في ولاية عبري</div><span class="site-tag">قلعة</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">قلعة الأسود</div><div class="site-desc">من قلاع عبري الأثرية</div><span class="site-tag">قلعة</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">قلعة السليف</div><div class="site-desc">قلعة أثرية في محافظة الظاهرة</div><span class="site-tag">قلعة</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي فدى</div><div class="site-desc">أجمل أودية الظاهرة • مزارع ونخيل وسط الطبيعة</div><span class="site-tag">وادي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي ضم</div><div class="site-desc">أحواض مائية وشلالات صغيرة وتكوينات صخرية فريدة</div><span class="site-tag">وادي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏜️</span><div class="site-info"><div class="site-name">صحراء ربع الخالي (أطراف عبري)</div><div class="site-desc">بداية الربع الخالي من الجانب العماني</div><span class="site-tag">صحراء</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌴</span><div class="site-info"><div class="site-name">واحات عبري بمزارع النخيل</div><div class="site-desc">واحة خضراء محاطة بمزارع النخيل والصحراء</div><span class="site-tag">واحة</span></div></div>
+      <div class="site-card"><span class="site-emoji">🗿</span><div class="site-info"><div class="site-name">قرية الغبي الأثرية</div><div class="site-desc">موقع أثري قريب من مقابر بات</div><span class="site-tag">أثري</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏔️</span><div class="site-info"><div class="site-name">جبال الكور</div><div class="site-desc">جبال تفصل الظاهرة عن الداخلية</div><span class="site-tag">جبال</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي الجزي</div><div class="site-desc">وادٍ يربط الظاهرة بالباطنة</div><span class="site-tag">وادي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌿</span><div class="site-info"><div class="site-name">واحة ينقل</div><div class="site-desc">واحة نخيل هادئة على طريق عبري-مسقط</div><span class="site-tag">واحة</span></div></div>
+      <div class="site-card"><span class="site-emoji">💧</span><div class="site-info"><div class="site-name">عيون عبري الطبيعية</div><div class="site-desc">عيون مياه منتشرة في أنحاء ولاية عبري</div><span class="site-tag">عيون</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏺</span><div class="site-info"><div class="site-name">متحف عبري التراثي</div><div class="site-desc">آثار وتراث منطقة الظاهرة</div><span class="site-tag">متحف</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي حوضة (ضنك)</div><div class="site-desc">وادٍ في ولاية ضنك على حدود الظاهرة</div><span class="site-tag">وادي</span></div></div>
+    </div>
+  </div>
+
+  <!-- ======= الوسطى ======= -->
+  <div class="gov-section wusta" id="sec-wusta">
+    <div class="gov-header" onclick="toggleSection('wusta')">
+      <span class="gov-icon">🦁</span>
+      <div class="gov-title">
+        <h2>محافظة الوسطى</h2>
+        <p>محمية المها • هيماء • الصحراء الوسطى</p>
+      </div>
+      <span class="gov-count">18 موقع</span>
+      <span class="toggle-icon">▲</span>
+    </div>
+    <div class="sites-grid">
+      <div class="site-card"><span class="site-emoji">🦌</span><div class="site-info"><div class="site-name">محمية المها العربية (جدة الحراسيس)</div><div class="site-desc">أنجح مشروع إعادة توطين حيوان نادر في العالم</div><span class="site-tag">محمية عالمية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏜️</span><div class="site-info"><div class="site-name">صحراء جنوب الوسطى</div><div class="site-desc">سياحة صحراوية ومغامرات 4×4 في قلب عمان</div><span class="site-tag">صحراء</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ هيماء</div><div class="site-desc">شاطئ على بحر العرب بسواحل نادرة الزوار</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏖️</span><div class="site-info"><div class="site-name">شاطئ جزيرة مصيرة (جنوب)</div><div class="site-desc">الجانب الجنوبي من جزيرة مصيرة الخلاب</div><span class="site-tag">شاطئ</span></div></div>
+      <div class="site-card"><span class="site-emoji">🦢</span><div class="site-info"><div class="site-name">مشاهدة طيور النورس (الوسطى)</div><div class="site-desc">أسراب طيور مهاجرة على سواحل الوسطى</div><span class="site-tag">طبيعي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">خور غويفت</div><div class="site-desc">خور طبيعي مع شجر القرم في الوسطى</div><span class="site-tag">خور</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏘️</span><div class="site-info"><div class="site-name">مدينة دقم الاقتصادية</div><div class="site-desc">مدينة صناعية بحرية صاعدة مفتوحة للزوار</div><span class="site-tag">مدينة حديثة</span></div></div>
+      <div class="site-card"><span class="site-emoji">🐢</span><div class="site-info"><div class="site-name">شواطئ تعشيش السلاحف (الوسطى)</div><div class="site-desc">شواطئ بكر لتعشيش السلاحف البحرية</div><span class="site-tag">محمية</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏜️</span><div class="site-info"><div class="site-name">كثبان رمال الجزء الأوسط</div><div class="site-desc">سياحة الكثبان وسباقات السيارات</div><span class="site-tag">صحراء</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">بحيرات دقم الساحلية</div><div class="site-desc">بيئات بحرية فريدة عند سواحل دقم</div><span class="site-tag">طبيعي</span></div></div>
+    </div>
+  </div>
+
+  <!-- ======= البريمي ======= -->
+  <div class="gov-section buraimi" id="sec-buraimi">
+    <div class="gov-header" onclick="toggleSection('buraimi')">
+      <span class="gov-icon">🏛️</span>
+      <div class="gov-title">
+        <h2>محافظة البريمي</h2>
+        <p>واحة البريمي التاريخية • الحدود العمانية الإماراتية</p>
+      </div>
+      <span class="gov-count">14 موقع</span>
+      <span class="toggle-icon">▲</span>
+    </div>
+    <div class="sites-grid">
+      <div class="site-card"><span class="site-emoji">🏰</span><div class="site-info"><div class="site-name">حصن الكندي (البريمي)</div><div class="site-desc">حصن تاريخي يرمز للتراث العماني في الواحة</div><span class="site-tag">حصن تاريخي</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌴</span><div class="site-info"><div class="site-name">واحة البريمي</div><div class="site-desc">واحة نخيل في نقطة التقاء الحضارات البرية</div><span class="site-tag">واحة</span></div></div>
+      <div class="site-card"><span class="site-emoji">🗿</span><div class="site-info"><div class="site-name">منشآت حجرية أثرية</div><div class="site-desc">مباني حجرية أثرية تعكس التواصل التاريخي</div><span class="site-tag">أثري</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌊</span><div class="site-info"><div class="site-name">وادي الجزي (البريمي)</div><div class="site-desc">طريق تجاري قديم وادٍ تاريخي مهم</div><span class="site-tag">وادي تاريخي</span></div></div>
+      <div class="site-card"><span class="site-emoji">💧</span><div class="site-info"><div class="site-name">الأفلاج التقليدية (البريمي)</div><div class="site-desc">شبكة أفلاج قديمة تروي مزارع الواحة</div><span class="site-tag">فلج</span></div></div>
+      <div class="site-card"><span class="site-emoji">🛍️</span><div class="site-info"><div class="site-name">سوق البريمي الشعبي</div><div class="site-desc">سوق شعبي نابض بالحياة التجارية الحدودية</div><span class="site-tag">سوق</span></div></div>
+      <div class="site-card"><span class="site-emoji">🌿</span><div class="site-info"><div class="site-name">حدائق البريمي البلدية</div><div class="site-desc">مساحات خضراء ومتنزهات عائلية</div><span class="site-tag">حديقة</span></div></div>
+      <div class="site-card"><span class="site-emoji">🏺</span><div class="site-info"><div class="site-name">موقع الحواسنة الأثري</div><div class="site-desc">موقع على طرق القوافل التجارية القديمة</div><span class="site-tag">أثري</span></div></div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>🌟 دليل المواقع السياحية في سلطنة عُمان | جمعت من مصادر وزارة التراث والسياحة والمحافظات الرسمية</p>
+  <p style="margin-top:8px">للاستفسار: وزارة التراث والسياحة العمانية • tourism.gov.om</p>
+</footer>
+
+<script>
+function toggleSection(id) {
+  const sec = document.getElementById('sec-' + id);
+  sec.classList.toggle('collapsed');
+}
+
+function filterSites() {
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  const cards = document.querySelectorAll('.site-card');
+  const sections = document.querySelectorAll('.gov-section');
+  let totalVisible = 0;
+
+  sections.forEach(sec => {
+    let secVisible = 0;
+    sec.querySelectorAll('.site-card').forEach(card => {
+      const text = card.textContent.toLowerCase();
+      if (!query || text.includes(query)) {
+        card.style.display = '';
+        secVisible++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+    sec.style.display = secVisible === 0 && query ? 'none' : '';
+    if (secVisible > 0 && query) sec.classList.remove('collapsed');
+    totalVisible += secVisible;
+  });
+
+  document.getElementById('noResults').style.display = totalVisible === 0 ? 'block' : 'none';
+}
+
+// Update total count
+const totalCards = document.querySelectorAll('.site-card').length;
+document.getElementById('totalCount').textContent = totalCards + '+';
+</script>
+</body>
+</html>
