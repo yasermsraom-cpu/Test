@@ -1,0 +1,41 @@
+<?php
+include 'includes/db.php';
+include 'includes/header.php';
+?>
+
+<section class="hero">
+    <h1>SAMAK</h1>
+    <img src="assets/images/fish/salmon.png" class="fish-bg" alt="Fish" onerror="this.style.display='none'">
+    <p>A digital fish marketplace connecting Omani fishermen directly with consumers,
+       restaurants, and seafood traders &mdash; eliminating middlemen through a clean,
+       accessible platform.</p>
+
+    <div style="margin-top:30px;">
+        <a href="browse.php" class="btn btn-primary">Browse Fish</a>
+        <?php if (!isset($_SESSION['user_id'])): ?>
+            <a href="register.php" class="btn btn-light">Sign Up</a>
+        <?php endif; ?>
+    </div>
+</section>
+
+<h2 class="page-title">Featured Fish</h2>
+<div class="products-grid">
+    <?php
+    $r = $conn->query("SELECT * FROM products WHERE in_service=1 ORDER BY id DESC LIMIT 4");
+    while ($p = $r->fetch_assoc()):
+        $img = "uploads/" . $p['image'];
+        if (!file_exists($img)) $img = "assets/images/fish/" . $p['image'];
+    ?>
+    <div class="product-card" data-name="<?= htmlspecialchars($p['name']) ?>"
+         data-category="<?= $p['category'] ?>" data-price="<?= $p['price'] ?>">
+        <img src="<?= $img ?>" alt="<?= htmlspecialchars($p['name']) ?>"
+             onerror="this.src='assets/images/fish/default.png'">
+        <h3><?= strtoupper($p['name']) ?></h3>
+        <p class="desc"><?= htmlspecialchars($p['description']) ?></p>
+        <div class="price"><?= number_format($p['price'],3) ?> OMR / kg</div>
+        <a href="product.php?id=<?= $p['id'] ?>" class="btn btn-primary">View</a>
+    </div>
+    <?php endwhile; ?>
+</div>
+
+<?php include 'includes/footer.php'; ?>
