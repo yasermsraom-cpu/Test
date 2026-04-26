@@ -1,7 +1,7 @@
 <?php
-include 'includes/db.php';
+include 'includes/db.html';
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php"); exit;
+    header("Location: login.html"); exit;
 }
 $uid = (int)$_SESSION['user_id'];
 $msg = '';
@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $user = $conn->query("SELECT * FROM users WHERE id=$uid")->fetch_assoc();
-include 'includes/header.php';
+include 'includes/header.html';
 ?>
 
 <h2 class="page-title">My Profile</h2>
