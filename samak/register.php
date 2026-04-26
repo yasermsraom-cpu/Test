@@ -1,0 +1,80 @@
+<?php
+include 'includes/db.php';
+$msg = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $name  = trim($_POST['name']);
+    $email = trim($_POST['email']);
+    $phone = trim($_POST['phone']);
+    $pass  = $_POST['password'];
+    $pass2 = $_POST['password2'];
+    $role  = $_POST['role']; // customer or fisherman
+
+    if ($pass !== $pass2) {
+        $msg = "<div class='alert alert-danger'>Passwords do not match.</div>";
+    } else {
+        // Check if email exists
+        $stmt = $conn->prepare("SELECT id FROM users WHERE email=?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $stmt->store_result();
+        if ($stmt->num_rows > 0) {
+            $msg = "<div class='alert alert-danger'>Email already registered.</div>";
+        } else {
+            $hash = password_hash($pass, PASSWORD_DEFAULT);
+            $stmt2 = $conn->prepare("INSERT INTO users (full_name,email,phone,password,role) VALUES (?,?,?,?,?)");
+            $stmt2->bind_param("sssss", $name, $email, $phone, $hash, $role);
+            if ($stmt2->execute()) {
+                header("Location: login.php?registered=1");
+                exit;
+            } else {
+                $msg = "<div class='alert alert-danger'>Registration failed.</div>";
+            }
+        }
+    }
+}
+
+include 'includes/header.php';
+?>
+
+<div class="form-card">
+    <h2>Sign Up</h2>
+    <?= $msg ?>
+
+    <form method="post">
+        <div class="form-group">
+            <label>Choose your account type</label>
+            <select name="role" class="form-control" required>
+                <option value="customer">CUSTOMER - Buy fresh fish</option>
+                <option value="fisherman">FISHERMAN - Sell your catch</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" name="name" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label>Phone</label>
+            <input type="text" name="phone" class="form-control" placeholder="+968 9xxxxxxx">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label>Confirm Password</label>
+            <input type="password" name="password2" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+        <p class="form-link">
+            Already have an account? <a href="login.php">Login</a>
+        </p>
+    </form>
+</div>
+
+<?php include 'includes/footer.php'; ?>
