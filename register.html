@@ -1,5 +1,5 @@
 <?php
-include 'includes/db.php';
+include 'includes/db.html';
 $msg = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt2 = $conn->prepare("INSERT INTO users (full_name,email,phone,password,role) VALUES (?,?,?,?,?)");
             $stmt2->bind_param("sssss", $name, $email, $phone, $hash, $role);
             if ($stmt2->execute()) {
-                header("Location: login.php?registered=1");
+                header("Location: login.html?registered=1");
                 exit;
             } else {
                 $msg = "<div class='alert alert-danger'>Registration failed.</div>";
@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-include 'includes/header.php';
+include 'includes/header.html';
 ?>
 
 <div class="form-card">
@@ -72,7 +72,7 @@ include 'includes/header.php';
 
         <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
         <p class="form-link">
-            Already have an account? <a href="login.php">Login</a>
+            Already have an account? <a href="login.html">Login</a>
         </p>
     </form>
 </div>
